@@ -13,15 +13,18 @@ http.createServer(async(req,res) => {
                 res.writeHead(200, {'Content-Type':'text/html; charset=utf-8'});
                 //위에서 200은 클라이언트로 보내는 상태코드를 의미한다.
                 //200 성공 201 작성됨 404 찾을수없음 500 내부 서버오류 등이 있다.
-                return res.end(data);
+                return res.end(data); //data를 넣어 응답을 보낸다.
                 //여기서 잠깐! res.end()를 return하는건 함수를 종료시키기 위해서이다
                 //노드는 자바스크립트 문법을 따르기 때문에 return하지 않으면 함수가 종료되지 않는다
                 //res.end 같은 메서드가 여러번 반복되면 Error:Can't set headers after they are sent to the client.에러 발생
             } else if (req.url === '/about') { // HTTP메서드:GET 주소:/about > about.html 제공
                 const data = await fs.readFile('./about.html');
                 res.writeHead(200, {'Content-Type':'text/html; charset=utf-8'});
+                //writeHead는 응답에 대한 정보를 기록하는 메서드, 이 정보는 헤더라 불리는 곳에 저장된다 
+                //첫번째 인수에는 클라이언트로 보내는 상태 코드
+                //두번째 인수에는 응답에 대한 정보를(콘텐츠 형식은 text/html이고 charset은 utf-8이다)
                 return res.end(data);
-            } else if (req.url === '/users') {
+            } else if (req.url === '/users') { // HTTP메서드:GET 주소:/users > 등록/수정/삭제가 발생할 때마다 갱신됨 사용자 정보를 가져온다.
                 res.writeHead(200, {'Content-Type':'text/html; charset=utf-8'});
                 return res.end(JSON.stringify(users));
             }
