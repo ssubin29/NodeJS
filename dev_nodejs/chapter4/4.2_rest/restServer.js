@@ -1,13 +1,14 @@
 const http = require('http');
 const fs = require('fs').promises;
 
-const users = {}; // 유저 데이터 저장용
+const users = {}; // 유저 데이터 저장 (데이터베이스 역할)
 
 http.createServer(async(req,res) => {
     try{
         console.log(req.method,req.url);
-        if(req.method === 'GET'){ //req.method를 통해 HTTP 요청 메서드 구분
-            if(req.url === '/'){ //HTTP메서드:GET 주소:/
+        //req.method를 통해 HTTP 요청 메서드 구분
+        if(req.method === 'GET'){ 
+            if(req.url === '/'){ // HTTP메서드:GET 주소:/ > restFront.html 제공
                 const data= await fs.readFile('./restFront.html');
                 res.writeHead(200, {'Content-Type':'text/html; charset=utf-8'});
                 //위에서 200은 클라이언트로 보내는 상태코드를 의미한다.
@@ -15,7 +16,8 @@ http.createServer(async(req,res) => {
                 return res.end(data);
                 //여기서 잠깐! res.end()를 return하는건 함수를 종료시키기 위해서이다
                 //노드는 자바스크립트 문법을 따르기 때문에 return하지 않으면 함수가 종료되지 않는다
-            } else if (req.url === '/about') {
+                //res.end 같은 메서드가 여러번 반복되면 Error:Can't set headers after they are sent to the client.에러 발생
+            } else if (req.url === '/about') { // HTTP메서드:GET 주소:/about > about.html 제공
                 const data = await fs.readFile('./about.html');
                 res.writeHead(200, {'Content-Type':'text/html; charset=utf-8'});
                 return res.end(data);
@@ -30,7 +32,7 @@ http.createServer(async(req,res) => {
             } catch(err){
                 //주소에 해당하는 라우트를 못찾았다는 404 Not Found Error 발생
             }
-        } else if (req.method === 'POST'){
+        } else if (req.method === 'POST'){ // HTTP메서드:POST 주소:/user > 사용자 새로 저장
             if (req.url === '/user'){
                 let body = '';
                 //요청이 body를 stream 형식으로 받음
@@ -47,7 +49,7 @@ http.createServer(async(req,res) => {
                 res.end('등록 성공');
                 });
             }
-        } else if (req.method === 'PUT'){
+        } else if (req.method === 'PUT'){ // HTTP메서드:PUT 주소:/user/id > 해당 id의 사용자 제거
             if (req.url.startsWith('/user/')) {
                 const key = req.url.split('/')[2];
                 let body = '';
